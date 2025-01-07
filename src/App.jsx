@@ -1,0 +1,79 @@
+import { useState, useRef, useEffect } from "react";
+import Die from "./components/Die";
+import { nanoid } from "nanoid";
+import { useWindowSize } from "react-use";
+import Confetti from "react-confetti";
+
+export default function App() {
+  const { width, height } = useWindowSize();
+  const [dice, setDice] = useState(generateAllNewDice());
+
+  const gameWon =
+    dice.every((die) => die.isHeld) &&
+    dice.every((die) => die.value === dice[0].value);
+
+  // newGame in focus -using useEffect because DOM is not controlled by react
+  const buttonRef = useRef(null);
+  useEffect(() => {
+    if (gameWon) {
+      buttonRef.current.focus();
+    }
+  }, [gameWon]);
+
+  function generateAllNewDice() {
+    return new Array(10).fill(0).map(() => ({
+      value: Math.ceil(Math.random() * 6),
+      isHeld: false,
+      id: nanoid(),
+    }));
+  }
+
+  function rollDice() {
+    gameWon
+      ? setDice((oldDice) =>
+          oldDice.map(() => ({
+            value: Math.ceil(Math.random() * 6),
+            isHeld: false,
+            id: nanoid(),
+          }))
+        )
+      : setDice((oldDice) =>
+          oldDice.map((die) =>
+            die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) }
+          )
+        );
+  }
+  console.log(buttonRef);
+
+  function hold(id) {
+    setDice((oldDice) =>
+      oldDice.map((die) =>
+        die.id === id ? { ...die, isHeld: !die.isHeld } : die
+      )
+    );
+  }
+
+  const diceElements = dice.map((dieObj) => (
+    <Die
+      key={dieObj.id}
+      value={dieObj.value}
+      isHeld={dieObj.isHeld}
+      hold={() => hold(dieObj.id)}
+    />
+  ));
+
+  return (
+    <main>
+      {gameWon && <Confetti width={width - 20} height={height} />}
+      <h1 className="title">Tenzies</h1>
+      <p className="instructions">
+        Roll until all dice are the same. Click each die to freeze it at its
+        current value between rolls.
+      </p>
+      <div className="dice-container">{diceElements}</div>
+      <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
+        {gameWon ? "New Game" : "Roll"}
+      </button>
+    </main>
+  );
+}
