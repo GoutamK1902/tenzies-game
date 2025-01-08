@@ -9,7 +9,7 @@ export default function App() {
   const { width, height } = useWindowSize();
   const [dice, setDice] = useState(generateAllNewDice());
   const [rollCount, setRollCount] = useState(0);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(5);
 
   const gameWon =
     dice.every((die) => die.isHeld) &&
@@ -36,7 +36,7 @@ export default function App() {
 
     // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(timerId);
-  }, [gameWon]);
+  }, [timer]);
 
   function generateAllNewDice() {
     return new Array(10).fill(0).map(() => ({
