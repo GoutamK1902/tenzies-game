@@ -3,10 +3,13 @@ import Die from "./components/Die";
 import { nanoid } from "nanoid";
 import { useWindowSize } from "react-use";
 import Confetti from "react-confetti";
+import Header from "./components/Header";
 
 export default function App() {
   const { width, height } = useWindowSize();
   const [dice, setDice] = useState(generateAllNewDice());
+  const [rollCount, setRollCount] = useState(0);
+  const [timer, setTimer] = useState(60);
 
   const gameWon =
     dice.every((die) => die.isHeld) &&
@@ -20,6 +23,21 @@ export default function App() {
     }
   }, [gameWon]);
 
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setTimer((prevCount) => {
+        if (prevCount <= 1 || gameWon) {
+          clearInterval(timerId); // Stop the interval when timer reaches 0
+          return 0;
+        }
+        return prevCount - 1;
+      });
+    }, 1000); // 1000 ms = 1 second
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => clearInterval(timerId);
+  }, [gameWon]);
+
   function generateAllNewDice() {
     return new Array(10).fill(0).map(() => ({
       value: Math.ceil(Math.random() * 6),
@@ -29,19 +47,24 @@ export default function App() {
   }
 
   function rollDice() {
-    gameWon
-      ? setDice((oldDice) =>
-          oldDice.map(() => ({
-            value: Math.ceil(Math.random() * 6),
-            isHeld: false,
-            id: nanoid(),
-          }))
+    if (gameWon || timer == 0) {
+      setDice((oldDice) =>
+        oldDice.map(() => ({
+          value: Math.ceil(Math.random() * 6),
+          isHeld: false,
+          id: nanoid(),
+        }))
+      );
+      setRollCount(0);
+      setTimer(60);
+    } else {
+      setDice((oldDice) =>
+        oldDice.map((die) =>
+          die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) }
         )
-      : setDice((oldDice) =>
-          oldDice.map((die) =>
-            die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) }
-          )
-        );
+      );
+      setRollCount((prev) => prev + 1);
+    }
   }
   console.log(buttonRef);
 
@@ -63,17 +86,20 @@ export default function App() {
   ));
 
   return (
-    <main>
-      {gameWon && <Confetti width={width - 20} height={height} />}
-      <h1 className="title">Tenzies</h1>
-      <p className="instructions">
-        Roll until all dice are the same. Click each die to freeze it at its
-        current value between rolls.
-      </p>
-      <div className="dice-container">{diceElements}</div>
-      <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
-        {gameWon ? "New Game" : "Roll"}
-      </button>
-    </main>
+    <>
+      <Header timer={timer} setTimer={setTimer} rollCount={rollCount} />
+      <main>
+        {gameWon && <Confetti width={width - 20} height={height} />}
+        <h1 className="title">Tenzies</h1>
+        <p className="instructions">
+          Roll until all dice are the same. Click each die to freeze it at its
+          current value between rolls.
+        </p>
+        <div className="dice-container">{diceElements}</div>
+        <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
+          {gameWon || timer == 0 ? "New Game" : "Roll"}
+        </button>
+      </main>
+    </>
   );
 }
