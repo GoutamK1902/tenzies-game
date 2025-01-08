@@ -9,7 +9,7 @@ export default function App() {
   const { width, height } = useWindowSize();
   const [dice, setDice] = useState(generateAllNewDice());
   const [rollCount, setRollCount] = useState(0);
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(10);
 
   const gameWon =
     dice.every((die) => die.isHeld) &&
@@ -46,8 +46,28 @@ export default function App() {
     }));
   }
 
+  useEffect(() => {
+    if (!gameWon && timer == 0) {
+      document.body.classList.add("lose");
+      // Cleanup function to remove the class when the component unmounts
+    }
+    return () => {
+      document.body.classList.remove("lose");
+    };
+  }, [gameWon, timer]);
+
   function rollDice() {
-    if (gameWon || timer == 0) {
+    if (gameWon) {
+      setDice((oldDice) =>
+        oldDice.map(() => ({
+          value: Math.ceil(Math.random() * 6),
+          isHeld: false,
+          id: nanoid(),
+        }))
+      );
+      setRollCount(0);
+      setTimer(60);
+    } else if (!gameWon && timer == 0) {
       setDice((oldDice) =>
         oldDice.map(() => ({
           value: Math.ceil(Math.random() * 6),
@@ -91,7 +111,7 @@ export default function App() {
       <main>
         {gameWon && <Confetti width={width - 20} height={height} />}
         <h1 className="title">Tenzies</h1>
-        <p className="instructions">
+        <p className="to-blur instructions">
           Roll until all dice are the same. Click each die to freeze it at its
           current value between rolls.
         </p>
