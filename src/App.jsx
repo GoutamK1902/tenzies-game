@@ -9,7 +9,7 @@ export default function App() {
   const { width, height } = useWindowSize();
   const [dice, setDice] = useState(generateAllNewDice());
   const [rollCount, setRollCount] = useState(0);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(6);
 
   const gameWon =
     dice.every((die) => die.isHeld) &&
@@ -111,7 +111,9 @@ export default function App() {
       <main>
         {gameWon && <Confetti width={width - 20} height={height} />}
         <h1 className="title">Tenzies</h1>
-        {!gameWon ? (
+        {!gameWon && timer == 0 ? (
+          <div className="won">You Lose</div>
+        ) : !gameWon ? (
           <>
             <p className="to-blur instructions">
               Roll until all dice are the same. Click each die to freeze it at
