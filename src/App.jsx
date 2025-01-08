@@ -9,7 +9,7 @@ export default function App() {
   const { width, height } = useWindowSize();
   const [dice, setDice] = useState(generateAllNewDice());
   const [rollCount, setRollCount] = useState(0);
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(60);
 
   const gameWon =
     dice.every((die) => die.isHeld) &&
