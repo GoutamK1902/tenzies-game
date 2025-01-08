@@ -111,11 +111,17 @@ export default function App() {
       <main>
         {gameWon && <Confetti width={width - 20} height={height} />}
         <h1 className="title">Tenzies</h1>
-        <p className="to-blur instructions">
-          Roll until all dice are the same. Click each die to freeze it at its
-          current value between rolls.
-        </p>
-        <div className="dice-container">{diceElements}</div>
+        {!gameWon ? (
+          <>
+            <p className="to-blur instructions">
+              Roll until all dice are the same. Click each die to freeze it at
+              its current value between rolls.
+            </p>
+            <div className="dice-container">{diceElements}</div>
+          </>
+        ) : (
+          <div className="won">You Won</div>
+        )}
         <button ref={buttonRef} className="roll-dice" onClick={rollDice}>
           {gameWon || timer == 0 ? "New Game" : "Roll"}
         </button>
