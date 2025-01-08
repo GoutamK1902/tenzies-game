@@ -43,6 +43,35 @@ main {
     padding: 0 0 8px;
 }
 
+.mode {
+    background-color: #F5F5F5;
+    height: 100%;
+    border-radius: 5px;
+    padding: 5px;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 5px;
+}
+
+.mode>button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 1px 2px 3px 1px #0000009f;
+    border-radius: 10px;
+    border: none;
+    font-size: 3rem;
+    font-style: italic;
+    font-weight: 900;
+    font-weight: bold;
+    background-color: #222;
+    color: white;
+}
+
+.mode>button:hover {
+    transition: 400ms;
+    background-color: #111;
+}
 
 .title {
     font-size: 40px;

@@ -9,7 +9,7 @@ export default function App() {
   const { width, height } = useWindowSize();
   const [dice, setDice] = useState(generateAllNewDice());
   const [rollCount, setRollCount] = useState(0);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(30);
 
   const gameWon =
     dice.every((die) => die.isHeld) &&
@@ -66,7 +66,7 @@ export default function App() {
         }))
       );
       setRollCount(0);
-      setTimer(60);
+      setTimer(30);
     } else if (!gameWon && timer == 0) {
       setDice((oldDice) =>
         oldDice.map(() => ({
@@ -76,7 +76,7 @@ export default function App() {
         }))
       );
       setRollCount(0);
-      setTimer(60);
+      setTimer(30);
     } else {
       setDice((oldDice) =>
         oldDice.map((die) =>
